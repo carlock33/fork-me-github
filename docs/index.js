@@ -14,7 +14,7 @@ window.onload = function()
         }
     )
 
-    require('./highlight')();
+    require('./highlight')()
 }
 },{"..":3,"./highlight":2}],2:[function(require,module,exports){
 // shows the code in the demo
