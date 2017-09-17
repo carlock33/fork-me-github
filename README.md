@@ -6,7 +6,7 @@ Wanted an easy way to add a "fork me on github" ribbon using plain javascript wi
 
 ## Simple Example
 
-    const ForkMe = require('fork-me-github');
+    const ForkMe = require('fork-me-github')
     ForkMe('https://github.com/davidfig/fork-me-github/)
 
 ## Live Example

@@ -13,5 +13,5 @@ window.onload = function()
         }
     )
 
-    require('./highlight')();
+    require('./highlight')()
 }
