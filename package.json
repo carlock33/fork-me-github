@@ -9,6 +9,13 @@
     "docs": "markdown-api README.md index.js",
     "prepare": "npm run build && npm run docs"
   },
+  "keywords": [
+    "fork",
+    "github",
+    "ribbon",
+    "fork me on github",
+    "javascript"
+  ],
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/davidfig/debug.git"
