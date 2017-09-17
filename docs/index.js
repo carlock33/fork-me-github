@@ -1,27 +1,21 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-const Panel = require('..');
+const forkMe = require('..')
 
-let counter, n = 0
-
-function count()
+window.onload = function()
 {
-    counter.log(n++, n)
-}
-
-window.onload = function ()
-{
-    const panel = new Panel({ side: 'top left' })
-    panel.log('top left panel')
-
-    const panel2 = new Panel({ side: 'bottomRight' })
-    panel2.log('bottom right panel', 'With two lines.')
-
-    counter = new Panel({side: 'bottom left', background: 'red'})
-    count()
-    setInterval(count, 250)
+    forkMe('https://github.com/davidfig/fork-me-github/')
+    forkMe('https://github.com/davidfig/fork-me-github', { background: 'green', side: 'topleft' })
+    forkMe('https://github.com/davidfig/fork-me-github',
+        {
+            background: 'black',
+            color: 'yellow',
+            side: 'bottomleft',
+            text: 'view on github'
+        }
+    )
 
     require('./highlight')();
-};
+}
 },{"..":3,"./highlight":2}],2:[function(require,module,exports){
 // shows the code in the demo
 module.exports = function highlight()
@@ -40,99 +34,158 @@ module.exports = function highlight()
 // for eslint
 /* globals window, XMLHttpRequest, document */
 },{"highlight.js":5}],3:[function(require,module,exports){
+// Programatically add fork me on github ribbon from javascript without making changes to CSS, HTML, or adding image files
+// by David Figatner
+// copyright 2017 YOPEY YOPEY LLC
+// MIT license
+// based on https://github.com/simonwhitaker/github-fork-ribbon-css (MIT license)
+
+const RIBBON = {
+    width: '12.1em',
+    height: '12.1em',
+    overflow: 'hidden',
+    top: 0,
+    right: 0,
+    zIndex: 9999,
+    pointerEvents: 'none',
+    fontSize: '13px',
+    textDecoration: 'none',
+    textIndent: '-999999px'
+}
+
+const BEFORE_AFTER = [
+    ['position', 'absolute'],
+    ['display', 'block'],
+    ['width', '15.38em'],
+    ['height', '1.54em'],
+    ['top', '3.23em'],
+    ['right', '-3.23em'],
+    ['-webkit-box-sizing', 'content-box'],
+    ['-moz-box-sizing', 'content-box'],
+    ['box-sizing', 'content-box'],
+    ['-webkit-transform', 'rotate(45deg)'],
+    ['-moz-transform', 'rotate(45deg)'],
+    ['-ms-Transform', 'rotate(45deg)'],
+    ['-o-transform', 'rotate(45deg)'],
+    ['transform', 'rotate(45deg)']
+]
+
+const BEFORE = [
+    ['content', '""'],
+    ['padding', '.38em 0'],
+    ['background-color', '#a00'],
+    ['background-image', '-webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.15)))'],
+    ['background-image', '-webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15))'],
+    ['background-image', '-moz-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15))'],
+    ['background-image', '-ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15))'],
+    ['background-image', '-o-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15))'],
+    ['background-image', 'linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15))'],
+    ['box-shadow', '0 .15em .23em 0 rgba(0, 0, 0, 0.5)'],
+    ['pointer-events', 'auto']
+]
+
+const AFTER = [
+    ['content', 'attr(data-ribbon)'],
+    ['color', '#fff'],
+    ['font', '700 1em "Helvetica Neue", Helvetica, Arial, sans-serif'],
+    ['line-height', '1.54em'],
+    ['text-decoration', 'none'],
+    ['text-shadow', '0 -.08em rgba(0, 0, 0, 0.5)'],
+    ['text-align', 'center'],
+    ['text-indent', '0'],
+    ['padding', '.15em 0'],
+    ['margin', '.15em 0'],
+    ['border-width', '.08em 0'],
+    ['border-style', 'dotted'],
+    ['border-color', '#fff'],
+    ['border-color', 'rgba(255, 255, 255, 0.7)']
+]
+
 /**
- * @file console-counter.js
- * @summary In-browser console to watch changeable values like counters or FPS
- * @author David Figatner
- * @license MIT
- * @copyright YOPEY YOPEY LLC 2017
- * {@link https://github.com/davidfig/console-counter}
+ * Programmatically add "Fork me Github" Ribbon using inline CSS
+ * Based on CSS from https,//github.com/simonwhitaker/github-fork-ribbon-css
+ * @param {string} url - html link
+ * @param {object} [options]
+ * @param {HTMLElement} [options.parent=document.body]
+ * @param {boolean} [options.fixed]
+ * @param {string} [options.corner=topright] some combination of top/bottom, and left/right
+ * @param {string} [options.text=fork me on github] text to show
+ * @param {string} [options.background=#a00] color for ribbon
  */
-
-module.exports = class ConsoleCounter
+module.exports = function forkMe(url, options)
 {
-    /**
-     * @param {object} [options]
-     * @param {side} [options.side='rightbottom'] side to place the panel (combination of right/left and bottom/top)
-     * @param {string} [options.parent=document.body]
-     * @param {number} [options.padding=7px]
-     * @param {string} [options.color=white]
-     * @param {string} [options.background=rgba(150,150,150,0.5)]
-     * @param {string} [options.position=fixed]
-     * @param {number} [options.zIndex=1000]
-     * @param {*} {options.xxx} where xxx is a CSS style for the div
-     */
-    constructor(options)
+    options = options || {}
+    const a = document.createElement('a')
+    a.href = url
+    a.title = a.innerText = options.text || 'fork me on github'
+    a.setAttribute('data-ribbon', options.text || 'fork me on github')
+    a.className = 'github-fork-ribbon-' + Math.round(Math.random() * 100000)
+    if (options.parent)
     {
-        options = options || {}
-        options.side = options.side || 'righbottom'
-        options.side.toLowerCase()
-        options.padding = options.padding || '7px'
-        options.color = options.color || 'white'
-        options.background = options.background || 'rgba(150,150,150,0.5)'
-        options.parent = options.parent || document.body
-        options.zIndex = options.zIndex || 1000
-        options.position = options.position || 'fixed'
-        this.div = document.createElement('div')
-        options.parent.appendChild(this.div)
-        this.div.style.position = options.position
-        this.div.style.overflow = 'hidden'
-        if (options.side.indexOf('left') !== -1)
-        {
-            this.div.style.left = 0
-        }
-        else
-        {
-            this.div.style.right = 0
-        }
-        if (options.side.indexOf('top') !== -1)
-        {
-            this.div.style.top = 0
-        }
-        else
-        {
-            this.div.style.bottom = 0
-        }
-        for (let style in options)
-        {
-            if (style !== 'parent' && style !== 'side')
-            {
-                this.div.style[style] = options[style]
-            }
-        }
+        options.parent.appendChild(a)
     }
-
-    /**
-     * replaces the innerHTML of the console
-     * @param {string|number} text1
-     * @param {string|number} [text2]
-     * @param {string|number} [...textn] any number of arguments
-     */
-    log()
+    else
     {
-        let s = ''
-        for (let arg of arguments)
-        {
-            s += '<div>' + arg + '</div>'
-        }
-        this.div.innerHTML =  s
+        document.body.appendChild(a)
     }
-
-    /**
-     * appends to the innerHTML of the console
-     * @param {string|number} text1
-     * @param {string|number} [text2]
-     * @param {string|number} [...textn] any number of arguments
-     */
-    append()
+    a.style.position = options.fixed ? 'fixed' : 'absolute'
+    if (options.background)
     {
-        let s = this.div.innerHTML
-        for (let arg of arguments)
-        {
-            s += '<div>' + arg + '</div>'
-        }
-        this.div.innerHTML = s
+        BEFORE[2][1] = options.background
     }
+    if (options.color)
+    {
+        AFTER[1][1] = options.color
+    }
+    for (let style in RIBBON)
+    {
+        a.style[style] = RIBBON[style]
+    }
+    let beforeAfter = '{'
+    for (let style of BEFORE_AFTER)
+    {
+        beforeAfter += style[0] + ':' + style[1] + ';'
+    }
+    let before = beforeAfter
+    for (let style of BEFORE)
+    {
+        before += style[0] + ':' + style[1] + ';'
+    }
+    let after = beforeAfter
+    for (let style of AFTER)
+    {
+        after += style[0] + ':' + style[1] + ';'
+    }
+    let bottom, left
+    if (options.side)
+    {
+        bottom = options.side.toLowerCase().indexOf('bottom') !== -1
+        left = options.side.toLowerCase().indexOf('left') !== -1
+    }
+    if (bottom)
+    {
+        a.style.top = 'auto'
+        a.style.bottom = 0
+        before += 'top:auto;bottom:3.23em;'
+        after += 'top:auto;bottom:3.23em;'
+    }
+    if (left)
+    {
+        a.style.right = 'auto'
+        a.style.left = 0
+        before += 'right:auto;left:-3.23em;'
+        after += 'right:auto;left:-3.23em;'
+    }
+    if ((left && !bottom) || (!left && bottom))
+    {
+        before += 'transform:rotate(-45deg);'
+        after += 'transform:rotate(-45deg);'
+    }
+    const style = document.createElement('style')
+    document.head.appendChild(style)
+    const sheet = style.sheet
+    sheet.insertRule('.' + a.className + '::before' + before + '}')
+    sheet.insertRule('.' + a.className + '::after' + after + '}')
 }
 },{}],4:[function(require,module,exports){
 /*
