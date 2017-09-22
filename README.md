@@ -35,6 +35,10 @@ module.exports = function forkMe(url, options)
 
 Ribbon uses [Simon Whitaker's github-fork-ribbon-css](https://github.com/simonwhitaker/github-fork-ribbon-css), which is based on [Github's ribbon examples](https://github.com/blog/273-github-ribbons)
 
+# Similar plugins
+
+Merrier's [github-fork-ribbon-normal](https://github.com/merrier/github-fork-ribbon-normal) plugin is very similar, and something I probably would have used if I had found it before writing this one. 
+
 ## license  
 MIT License  
 (c) 2017 [YOPEY YOPEY LLC](https://yopeyopey.com/) by [David Figatner](https://twitter.com/yopey_yopey/)
