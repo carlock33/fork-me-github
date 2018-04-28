@@ -1,6 +1,6 @@
 // Programatically add fork me on github ribbon from javascript without making changes to CSS, HTML, or adding image files
 // by David Figatner
-// copyright 2017 YOPEY YOPEY LLC
+// copyright 2018 YOPEY YOPEY LLC
 // MIT license
 // based on https://github.com/simonwhitaker/github-fork-ribbon-css (MIT license)
 
@@ -68,7 +68,7 @@ const AFTER = [
 /**
  * Programmatically add "Fork me Github" Ribbon using inline CSS
  * Based on CSS from https,//github.com/simonwhitaker/github-fork-ribbon-css
- * @param {string} url - html link
+ * @param {string} [url] - do not need to include if URL is called from https://username.github.io/project/html
  * @param {object} [options]
  * @param {HTMLElement} [options.parent=document.body]
  * @param {boolean} [options.fixed]
@@ -80,7 +80,17 @@ module.exports = function forkMe(url, options)
 {
     options = options || {}
     const a = document.createElement('a')
-    a.href = url
+    if (url)
+    {
+        a.href = url
+    }
+    else
+    {
+        const username = window.location.hostname.split('.')[0]
+        const project = window.location.pathname.split('/')[1]
+        a.href = 'https://github.com/' + username + '/' + project
+    }
+
     a.title = a.innerText = options.text || 'fork me on github'
     a.setAttribute('data-ribbon', options.text || 'fork me on github')
     a.className = 'github-fork-ribbon-' + Math.round(Math.random() * 100000)
